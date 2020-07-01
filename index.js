@@ -6,9 +6,17 @@ const Canvas = require('canvas');
 const currency = new Discord.Collection();
 const Sequelize = require('sequelize');
 const { Kayn, REGIONS } = require('kayn');
-const mongoose = require('mongoose');
+const alexa = require('alexa-bot-api')
+const Enmap = require("enmap");
+const myEnmap = new Enmap();
+
+
+
+var chatbot = new alexa("aw2plm")
 
 const client = new Discord.Client();
+
+client.points = new Enmap({name: "points"});
 
 client.commands = new Discord.Collection();
 
@@ -33,6 +41,13 @@ client.once('ready', () => {
 });
 client.once('ready', () => {
 client.user.setActivity(`with  >help in || ${client.guilds.cache.size} || servers `);
+});
+client.on('message', async message => {
+  if(message.author.bot) return;
+  if(message.channel.name =="spartan-talks"){
+	let content = message.content;
+  chatbot.getReply(content).then(r => message.channel.send(r))
+  }
 });
 client.on('guildMemberAdd', async member => {
 	const channel = member.guild.channels.cache.find(c => c.id === member.guild.systemChannelID);
@@ -103,6 +118,20 @@ client.on('guildCreate', guild => {
   const examplembed = new Discord.MessageEmbed()
       .setColor(0x00AE86)
       .setTitle(`LOGS #${client.guilds.cache.size} >> I JOINED THE SERVER >> ${guild.name} <<`)
+			.setThumbnail(guild.iconURL)
+      .addField(':arrow_right: Name', guild.name, true)
+			.addField(':arrow_left: ID', guild.id, true )
+      .addField(':arrow_right: Region', guild.region)
+      .addField(':arrow_right: Member Count', guild.memberCount)
+      .addField(':arrow_left: Owner', guild.owner.user.tag)
+      .setTimestamp()
+       .setFooter(`SPARTAN V 2.0 LOGS`)
+  client.channels.cache.get('726303011147612270').send(examplembed);
+}); 
+client.on('guildDelete', guild => {
+  const examplembed = new Discord.MessageEmbed()
+      .setColor(0x00AE86)
+      .setTitle(`LOGS #${client.guilds.cache.size} >> I left THE SERVER >> ${guild.name} <<`)
 			.setThumbnail(guild.iconURL)
       .addField(':arrow_right: Name', guild.name, true)
 			.addField(':arrow_left: ID', guild.id, true )

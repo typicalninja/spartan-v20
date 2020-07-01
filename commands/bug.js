@@ -9,7 +9,8 @@ module.exports = {
   aliases: ['bug',],
 	cooldown: 5,
 	execute(message) {
-    const args = message.content.slice(prefix.length).split(/ +/)
+    const args = message.content.slice(prefix.length).split(/ + /)
+    if (!args.length) return message.channel.send("pls mention a bug to report")
     const examplembed = new Discord.MessageEmbed()
     .setColor('#0260ff')
     .setTitle(`USER >> ${message.author.username} << sent A Bug report`)
@@ -24,5 +25,5 @@ module.exports = {
     .setAuthor(message.author.tag, message.author.displayAvatarURL())
     .setFooter(`REQUESTED BY : ${message.author.username}`);
           message.channel.send(bugembed);
-   },
+   }
 };

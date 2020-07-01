@@ -13,18 +13,16 @@ module.exports = {
      const examplembed = new Discord.MessageEmbed()
     .setColor('RANDOM')
     .setThumbnail('https://imgur.com/n76Dgrp.png')
-    .setTitle('NEED HELP HERE YOU GO!!')
+    .setTitle('==NEED HELP HERE YOU GO!!==')
     .setFooter(`\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`)
     .setDescription(commands.map(command => command.name).join(` , `));
     message.channel.send(examplembed)
    }
-
-		const name = args[0].toLowerCase();
-		const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
-
-		if (!command) {
+	 if(!command) {
 			return message.reply('that\'s not a valid command!');
 		}
+    const name = args[0].toLowerCase();
+		const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
    const help2eEmbed = new Discord.MessageEmbed()
 		.setColor('RANDOM')
     .setTitle(`HELP for ${command.name}`)
