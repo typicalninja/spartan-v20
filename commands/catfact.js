@@ -6,7 +6,7 @@ const request = require('superagent');
 module.exports = {
 	name: 'catfact',
   aliases: ['cf', 'caf'],
-	description: 'get a urban dictionary definition',
+	description: 'get a catfact ',
 	async execute(message,args) {
   	const { fact } = await fetch('https://catfact.ninja/fact').then(response => response.json());
     const embed = new Discord.MessageEmbed()

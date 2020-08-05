@@ -4,8 +4,8 @@ module.exports = {
   description: "generates a 8ball game for a user",
   usage: "[question]",
   execute(message,args,kayn,REGIONS,client,config,con,guilds) {
-		 if('!args' == '0') {
-            message.reply('Please ask me a question.');
+		 if (!args.length) {
+            message.reply('Please ask me a question');
         } 
         else {
             let eightball = [

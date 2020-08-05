@@ -13,7 +13,7 @@ module.exports = {
      const kickMember = message.mentions.members.first() 
      if(!kickMember) return message.channel.send("please provide a user to kick" )
 
-    let reason = message.content.slice(1).join(" ")
+     const reason = message.content.slice(prefix.length).split(" ")
      if(!reason) reason = "no reason given"
 
      if(!message.guild.me.hasPermission(["KICK_MEMBERS"])) return message.channel.send("i do not have premission KICK MEMBERS TO PREFORM THIS COMMAND")
@@ -30,7 +30,7 @@ module.exports = {
       .addField("kicked", kickMember.user.username,)
       .addField("moderator", message.author.username,)
       .addField("reason", reason,)
-     .setFooter(`kicked log`);
+     .setFooter(`user kicked `);
      const channel = message.guild.channels.find(c => c.name === "mod-logs") 
      channel.send(kickembed);
  }

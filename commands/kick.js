@@ -4,44 +4,33 @@ const Discord = require('discord.js');
 
 module.exports = {
 	name: 'kick',
-	description: 'ping the bot',
-  aliases: ['=','kin'],
+	description: 'user is not behaving kick them',
+  aliases: ['ki','kik'],
 	cooldown: 5,
 	async execute(message,embed,args) {
-  
-        const user = message.mentions.users.first();
-    // If we have a user mentioned
-    if (user) {
-      // Now we get the member from the user
-      const member = message.guild.member(user);
-      // If the member is in the guild
-      if (member) {
-        /**
-         * Kick the member
-         * Make sure you run this on a member, not a user!
-         * There are big differences between a user and a member
-         */
-        member
-          .kick('Optional reason that will display in the audit logs')
-          .then(() => {
-            // We let the message author know we were able to kick the person
-            message.reply(`Successfully kicked ${user.tag}`);
-          })
-          .catch(err => {
-            // An error happened
-            // This is generally due to the bot not being able to kick the member,
-            // either due to missing permissions or role hierarchy
-            message.reply('I was unable to kick the member');
-            // Log the error
-            console.error(err);
-          });
-      } else {
-        // The mentioned user isn't in this guild
-        message.reply("That user isn't in this guild!");
-      }
-      // Otherwise, if no user was mentioned
-    } else {
-      message.reply("You didn't mention the user to kick!");
-    }
-},
+     if(!message.member.hasPermission(["KICK_MEMBERS"])) return message.channel.send("you do not have premission **KICK MEMBERS** to perform this command!")
+
+const kickMember = message.mentions.members.first() 
+     if(!kickMember) return message.channel.send("please provide a user to kick" )
+
+const reason = message.content.slice(prefix.length).split("  ")
+     if(!reason) reason = "no reason given"
+
+     if(!message.guild.me.hasPermission(["KICK_MEMBERS"])) return message.channel.send("i do not have premission KICK MEMBERS TO PREFORM THIS COMMAND")
+
+     kickMember.send(`hello,you have been kicked from ${message.guild.name} for: ${reason}`).then(() => 
+     kickMember.kick()).catch(err => console.log(err))
+
+ const taggedUser = message.mentions.users.first();
+
+      message.channel.send(`**${taggedUser.tag}** has been kicked for ${reason}`)
+
+      const kickembed = new Discord.MessageEmbed()
+      .setColor('RED')
+      .setTitle(`kicked user from ${message.guild.name} successfully`, message.guild.iconUrl)
+      .setDescription(`user **${taggedUser.tag}** was kicked from ${message.guild.name} by ${message.author.username} `)
+      .setFooter(`kicked log`);
+    
+    message.channel.send(kickembed);
+ }
 };

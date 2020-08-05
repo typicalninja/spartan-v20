@@ -1,60 +1,36 @@
+const cilent = require('discord.js');
+const { prefix } = require('../config.json');
 const Discord = require('discord.js');
 
 module.exports = {
-    name: 'ban',
-    description: 'ban someone off the channel',
-    usage: '[tagged user] [delete Messages After Ban For Past Days] [ban reason]',
-    guildOnly: true,
-    execute(message,args,guilds) {
-        if (!message.mentions.users.size) {
-            return message.reply('You need to tag a user in order to ban them!');
-        }
-        else {
-            // grab the "first" mentioned user from the message
-            // this will return a `User` object, just like `message.author`
-            const taggedUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
+	name: 'ban',
+	description: 'user is not behaving and kick had no effect ban them',
+  aliases: ['ba','ban'],
+	cooldown: 5,
+	async execute(message,embed,args) {
+     if(!message.member.hasPermission(["BAN_MEMBERS"])) return message.channel.send("you do not have premission **KICK MEMBERS** to perform this command!")
 
-            if (!taggedUser) {
-                message.channel.send('Can\'t find user!');
-            }
+const banMember = message.mentions.members.first() 
+     if(!banMember) return message.channel.send("please provide a user to kick" )
 
-            let days = parseInt(args[1]);
-            let reason = null;
+const reason = message.content.slice(prefix.length).split("  ")
+     if(!reason) reason = "no reason given"
 
-            if (isNaN(day)) { 
-                reason = args.slice(0).join(' ');
-                days = 0;
-            }
-            else {
-                reason = args.slice(1).join(' ');
-            }
-            
+     if(!message.guild.me.hasPermission(["BAN_MEMBERS"])) return message.channel.send("i do not have premission KICK MEMBERS TO PREFORM THIS COMMAND")
 
-            if (!message.member.hasPermission('MANAGE_MEMBERS')) {
-                return message.channel.send('No permission, can\'t do it pal!');
-            }
-            if (taggedUser.hasPermission('MANAGE_MESSAGES')) {
-                return message.channel.send('The person can\'t be baned!');
-            }
+     banMember.send(`hello,you have been banned from ${message.guild.name} for: ${reason}`).then(() => 
+     banMember.ban()).catch(err => console.log(err))
 
-            const banEmbed = new Discord.RichEmbed()
-                .setTitle('~Ban~')
-                .setColor(0xbc0000)
-                .addField('Baned User', `${taggedUser} with ID: ${taggedUser.id}`)
-                .addField('Baned By', `<@${message.author.id}> with ID: ${message.author.id}`)
-                .addField('Baned From', `${message.channel}`)
-                .addField('Reason', reason)
-                .setTimestamp(new Date())
-                .setFooter('RIP');
-            
-            const banChannel = message.guild.channels.find(c => c.id === member.guild.systemChannelID);
-            if (!banChannel) {
-                return message.channel.send('Can\'t find incidents channel');
-            }
+ const taggedUser = message.mentions.users.first();
 
-            message.guild.member(taggedUser).ban(reason, days);
-            banChannel.send(banEmbed);
-            return 'finished';
-        }
-    },
+      message.channel.send(`**${taggedUser.tag}** has been banned for ${reason}`)
+
+      const kickembed = new Discord.MessageEmbed()
+      .setColor('RED')
+      .setTitle(`kicked user from ${message.guild.name} successfully`, message.guild.iconUrl)
+      .setDescription(`user **${taggedUser.tag}** was kicked from ${message.guild.name} by ${message.author.username} `)
+      .setFooter(`kicked log`);
+    
+    message.channel.send(kickembed);
+ }
 };

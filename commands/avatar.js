@@ -14,7 +14,7 @@ module.exports = {
       .setFooter(`REQUESTED BY : ${message.author.username}`);
      message.channel.send(examplembed);
       
-    } if (message.mentions.users.map){
+    } else if (message.mentions.users.map){
      const taggedUser = message.mentions.users.first();
 			const examplembed = new Discord.MessageEmbed()
       .setColor('#010ff')

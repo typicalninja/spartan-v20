@@ -5,18 +5,16 @@ const fetch = require('node-fetch');
 const Canvas = require('canvas');
 const currency = new Discord.Collection();
 const Sequelize = require('sequelize');
-const { Kayn, REGIONS } = require('kayn');
 const alexa = require('alexa-bot-api')
-const Enmap = require("enmap");
-const myEnmap = new Enmap();
+const config = require("./config.json");
+const chalk = require('chalk');
+const winston = require('winston');
 
 
 
-var chatbot = new alexa("aw2plm")
 
 const client = new Discord.Client();
 
-client.points = new Enmap({name: "points"});
 
 client.commands = new Discord.Collection();
 
@@ -29,7 +27,6 @@ for (const file of commandFiles) {
 const cooldowns = new Discord.Collection();
 
 client.once('ready', () => {
-	console.log('Ready!');
   const examplembed = new Discord.MessageEmbed()
     .setColor('GREEN')
     .setTitle('🤖 Bot status 🤖')
@@ -39,15 +36,50 @@ client.once('ready', () => {
     .setFooter(`servers : ${client.guilds.cache.size} `);
   client.channels.cache.get('726759543777918976').send(examplembed);
 });
-client.once('ready', () => {
-client.user.setActivity(`with  >help in || ${client.guilds.cache.size} || servers `);
+const logger = winston.createLogger({
+	transports: [
+		new winston.transports.Console(),
+		new winston.transports.File({ filename: 'log' }),
+	],
+	format: winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`),
 });
-client.on('message', async message => {
-  if(message.author.bot) return;
-  if(message.channel.name =="spartan-talks"){
-	let content = message.content;
-  chatbot.getReply(content).then(r => message.channel.send(r))
-  }
+
+client.on('ready', () => logger.log('info', 'The bot is online!'));
+client.on('debug', m => logger.log('debug', m));
+client.on('warn', m => logger.log('warn', m));
+client.on('error', m => logger.log('error', m));
+
+process.on('uncaughtException', error => logger.log('error', error));
+
+client.on('message',  message => {
+  if(config.FILTER_LIST.some(word => message.content.toLowerCase().includes(word))){
+    message.delete()
+ }})
+client.on('messageDelete',  message => {
+	console.log(chalk.green('INFO:'), `A message by ${message.author.tag} was deleted, but we don't know by who yet.`)
+  const embed = new Discord.MessageEmbed()
+    .setColor('GREEN')
+    .setTitle(`💬 message of ${message.author.tag} deleted 💬`)
+    .setDescription(`message of ${message.author.tag} with content >> ${message.content} << was deleted `)
+    .setTimestamp()
+    .setAuthor(`message delted`)
+    .setFooter(`logs `);
+   const channel = message.guild.channels.cache.find(ch => ch.name === 'logs');
+   if (!channel) return;
+  channel.send(embed)
+});
+client.on("disconnected", () => {
+    const offlineembed = new Discord.MessageEmbed()
+    .setColor('RED')
+    .setTitle('🤖 Bot status 🤖')
+    .setDescription(`:negative_squared_cross_mark:  spartan v2.0 is offline in |  ${client.guilds.cache.size} | servers\n BOT PREFIX = > `)
+    .setTimestamp()
+    .setAuthor(`BOT offline`)
+    .setFooter(`servers : ${client.guilds.cache.size} `);
+  client.channels.cache.get('726759543777918976').send(offlineembed);
+});
+client.once('ready', () => {
+client.user.setActivity(`with >help in || ${client.guilds.cache.size} || servers `);
 });
 client.on('guildMemberAdd', async member => {
 	const channel = member.guild.channels.cache.find(c => c.id === member.guild.systemChannelID);
@@ -129,6 +161,7 @@ client.on('guildCreate', guild => {
   client.channels.cache.get('726303011147612270').send(examplembed);
 }); 
 client.on('guildDelete', guild => {
+  console.log(chalk.green('INFO:'),`i left a server .server:${guild.name}`)
   const examplembed = new Discord.MessageEmbed()
       .setColor(0x00AE86)
       .setTitle(`LOGS #${client.guilds.cache.size} >> I left THE SERVER >> ${guild.name} <<`)
@@ -198,7 +231,7 @@ client.on('message', message => {
 		command.execute(message, args);
 	} catch (error) {
 		console.error(error);
-		message.reply('there was an error trying to execute that command!,maybe you typed the command wrong if not pls report it using >bug <report>');
+		message.reply('there was an error trying to execute that command!,maybe you typed the command wrong');
 	}
 });
 
