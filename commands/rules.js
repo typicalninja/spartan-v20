@@ -8,7 +8,9 @@ module.exports = {
   aliases: ['r','ru'],
 	cooldown: 5,
 	execute(message,embed) {
-    message.channel.send('@everyone')
+    if(!message.member.hasPermission(["ADMINISTRATOR"])) return message.channel.send("you do not have premission **ADMINISTRATOR** to perform this command!");
+
+    message.delete()
     const examplembed = new Discord.MessageEmbed()
     .setColor('#0099ff')
     .setTitle(`:no_entry_sign: Here are the rules for ${message.guild.name}`)

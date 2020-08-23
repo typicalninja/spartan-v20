@@ -9,7 +9,9 @@ const alexa = require('alexa-bot-api')
 const config = require("./config.json");
 const chalk = require('chalk');
 const winston = require('winston');
-
+const DBL = require("dblapi.js");
+const keepAlive = require('./server.js');
+const antispam = require('better-discord-antispam');
 
 
 
@@ -26,6 +28,8 @@ for (const file of commandFiles) {
 }
 const cooldowns = new Discord.Collection();
 
+const dbl = new DBL(process.env.TOKEN , client);
+
 client.once('ready', () => {
   const examplembed = new Discord.MessageEmbed()
     .setColor('GREEN')
@@ -36,6 +40,28 @@ client.once('ready', () => {
     .setFooter(`servers : ${client.guilds.cache.size} `);
   client.channels.cache.get('726759543777918976').send(examplembed);
 });
+dbl.on('posted', () => {
+  console.log('Server count posted!');
+})
+ client.on('ready', () => {
+   antispam(client, {
+        limitUntilWarn: 3,
+        limitUntilMuted: 5,
+        interval: 2000, 
+        warningMessage: "if you don't stop from spamming, I'm going to punish you!", 
+        muteMessage: "was muted since we don't like too much advertisement type people!", 
+        maxDuplicatesWarning: 7,
+        maxDuplicatesMute: 10,
+        mutedRole: "muted", 
+        timeMuted: 1000 * 600, 
+        logChannel: "logs"
+      });
+
+   });
+client.on('message', msg => {
+  client.emit('checkMessage', msg);
+});
+
 const logger = winston.createLogger({
 	transports: [
 		new winston.transports.Console(),
@@ -234,5 +260,6 @@ client.on('message', message => {
 		message.reply('there was an error trying to execute that command!,maybe you typed the command wrong');
 	}
 });
+keepAlive();
 
 client.login(process.env.CLIENT_TOKEN);

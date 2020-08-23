@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 module.exports = {
 	name: 'king',
   aliases: ['ki', 'k'],
-	description: 'Get insulted by the bot ',
+	description: 'be a king  ',
 	execute(message, embed) {
 		if (!message.guild) {
      const examplembed = new Discord.MessageEmbed()
